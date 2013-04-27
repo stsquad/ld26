@@ -3,11 +3,16 @@ from pygame.locals import *
 import random
 import math
 
+# Constants
+BS = 128 # Block size in pixels
+GSX = 64 # Maze grid size
+GSY = 64
 class Player:
     def __init__(self):
         self.x = 32*4
         self.y = 32*4
         self.rot = 0
+
 def init():
     global screen, clock, maze, shipPoly, player, speed
     pygame.init()
@@ -23,6 +28,7 @@ def init():
     shipPoly = polyRotate(shipPoly, -math.pi/2 ) # Adjust so it faces to 0 radians
     player = Player()
     speed = 4
+
 def createMaze(maze):
     for x in range(0,64):
         for y in range(0,64):
@@ -53,15 +59,18 @@ def processKeys():
     if(keys[K_LEFT]): player.rot -= 0.1
     if(keys[K_RIGHT]): player.rot += 0.1
 
+def getMaze(x,y):
+    if(x<0 or x>= GSX or y<0 or y>=GSY): return 1
+    return maze[x][y]
 
 def loop():
     while 1:
         clock.tick(50)
         screen.fill((0,0,0))
-        for x in range(0,64):
-            for y in range(0,64):
-                if(maze[x][y] == 1):
-                    pygame.draw.rect(screen, (255,255,255), (x*64-player.x,y*64-player.y,64,64))
+        for x in range(int(player.x/BS)-1,int(player.x/BS)+6):
+            for y in range(int(player.y/BS)-1,int(player.y/BS)+5):
+                if(getMaze(x,y) == 1):
+                    pygame.draw.rect(screen, (255,255,255), (x*BS-player.x,y*BS-player.y,BS,BS))
         shipRotPoly = polyRotate(shipPoly,player.rot)
         shipTransPoly = polyTranslate(shipRotPoly,320,256)
         
