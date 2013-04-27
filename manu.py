@@ -14,15 +14,17 @@ class Player:
         self.speed = 0
 
 def init():
-    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite
     pygame.init()
     screen = pygame.display.set_mode((640,480))
     pygame.display.set_caption('Turning circle')
     clock = pygame.time.Clock()
     numSprite = pygame.image.load("numbers.gif")
-    
     numSprite = pygame.transform.scale(numSprite, (numSprite.get_width()*3,numSprite.get_height()*3))
     numSprite.set_colorkey((255,255,255))
+    letterSprite = pygame.image.load("letters.gif")
+    letterSprite = pygame.transform.scale(letterSprite, (letterSprite.get_width()*3,letterSprite.get_height()*3))
+    letterSprite.set_colorkey((255,255,255))
     maze = [0]*GS
     for i in range(0,GS): maze[i] = [0]*GS
     random.seed(2013)
@@ -108,6 +110,7 @@ def loop():
         shipRotPoly = polyRotate(shipPoly,player.rot)
         shipTransPoly = polyTranslate(shipRotPoly,320,240)
         
+
         for x in range(int(player.x/BS)-1,int(player.x/BS)+6):
             for y in range(int(player.y/BS)-1,int(player.y/BS)+5):
                 if(getMaze(x,y) == 1):
@@ -133,6 +136,7 @@ def loop():
         wTransPoly = polyTranslate(wRotPoly, 320,240)
         pygame.draw.polygon(screen, (0,0,0), wTransPoly)
 
+        drawText(screen, 320, 240, "HELLO")
 
         pygame.display.flip()
         if(dead):           
@@ -207,6 +211,21 @@ def titleScreen():
                     exit(0)
                 elif event.key == K_SPACE:
                     return
+
+def drawChar(surface, x, y, c):
+    pos = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(c)+1
+    surface.blit(letterSprite, (x,y), (pos*FONTSCALE*3,0,FONTSCALE*3,5*FONTSCALE))
+   
+
+def drawText(surface, x, y, string):
+    print "Drawing text %s at %d,%d"%(string,x,y)
+    if(len(string)==0):
+        return
+    c = string[0]
+    drawChar(surface, x, y, c)
+    x+=4*FONTSCALE
+    drawText(surface, x, y, string[1:])
+
 
 def drawDigit(surface, x, y, d):
     surface.blit(numSprite, (x,y), (d*3*3,0,3*3,5*3))
