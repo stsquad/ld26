@@ -49,7 +49,7 @@ def linesIntersect(s1,e1,s2,e2):
     box2y1 = min(s2[1],e2[1])
     box2y2 = max(s2[1],e2[1])
 
-    # Check boundnig boxes actually overlap                                                                                                  
+    # Check bounding boxes actually overlap                                                                                                  
     if(box1x2 < box2x1 or box1x1 > box2x2): return False
     if(box1y2 < box2y1 or box1y1 > box2y2): return False
     box3x1 = max(box1x1, box2x1)
@@ -62,7 +62,7 @@ def linesIntersect(s1,e1,s2,e2):
     return False
 
 def polyIntersectsBlock(poly2, blockX,blockY):
-    poly1 = [ (0,0), (BS,0), (BS,BS), (0,BS) ]
+    poly1 = [ (0,0), (BS,0), (BS,BS), (0,BS), (0,0) ]
     poly1 = polyTranslate(poly1,blockX,blockY)
 
     for i in range(0,len(poly1)-1):

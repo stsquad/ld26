@@ -27,12 +27,15 @@ def init():
     player = Player()
     speed = 4
 
+def playerReset():
+    global player
+    player = Player()
+
 def createMaze(maze):
     for x in range(0,64):
         for y in range(0,64):
             if(x>2 and y>2):
                 maze[x][y] = random.choice([0,1])
-
 
 def processKeys():
     keys = pygame.key.get_pressed()
@@ -47,7 +50,7 @@ def loop():
     while 1:
         clock.tick(50)
         screen.fill((0,0,0))
-
+        dead = False
         shipRotPoly = polyRotate(shipPoly,player.rot)
         shipTransPoly = polyTranslate(shipRotPoly,320,256)
         
@@ -57,9 +60,11 @@ def loop():
                 if(getMaze(x,y) == 1):
                     pygame.draw.rect(screen, (255,255,255), (x*BS-player.x,y*BS-player.y,BS,BS))
                     if polyIntersectsBlock(shipTransPoly, x*BS-player.x,y*BS-player.y):
-                        pygame.draw.circle(screen, (255,0,0), (64,64),64)
+                        dead = True
         pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
         pygame.display.flip()
+        if(dead): 
+            playerReset()
         player.x += speed*math.cos(player.rot)
         player.y += speed*math.sin(player.rot)
         processKeys()
