@@ -56,8 +56,8 @@ def polyRotate(poly,rads):
 
 def processKeys():
     keys = pygame.key.get_pressed()
-    if(keys[K_LEFT]): player.rot -= 0.1
-    if(keys[K_RIGHT]): player.rot += 0.1
+    if(keys[K_LEFT]): player.rot -= 0.05
+    if(keys[K_RIGHT]): player.rot += 0.05
 
 def getMaze(x,y):
     if(x<0 or x>= GSX or y<0 or y>=GSY): return 1
