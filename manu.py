@@ -8,8 +8,8 @@ from mazegen import makeMaze, initMaze
 
 class Player:
     def __init__(self):
-        self.x = 32*4
-        self.y = 32*4
+        self.x = -(BS/2)
+        self.y = -(BS/2)
         self.rot = 0
         self.speed = 0
 
@@ -60,9 +60,6 @@ def createMaze(maze):
             maze[x][y] = 1
     initMaze()
     route = makeMaze(maze, 1,1,0)
-    for x in range(0,6):
-        for y in range(0,4):
-            maze[x][y] = 0
 
     print "Route through maze: "
     print route
@@ -122,7 +119,7 @@ def loop():
                         pygame.draw.circle(screen, (255,255,0), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
                 elif(getMaze(x,y) == 5):
                         pygame.draw.circle(screen, (0,255,0), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),16)
-        screen.blit(miniMap, (0,0))
+        #screen.blit(miniMap, (0,0))
 
         pygame.draw.polygon(screen, (255,255,255), shipTransPoly)
 
