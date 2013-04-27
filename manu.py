@@ -55,7 +55,7 @@ def processKeys():
 def loop():
     while 1:
         clock.tick(25)
-        pygame.display.flip()
+        screen.fill((0,0,0))
         for x in range(0,64):
             for y in range(0,64):
                 if(maze[x][y] == 1):
@@ -64,6 +64,7 @@ def loop():
         shipTransPoly = polyTranslate(shipRotPoly,player.x,player.y)
         
         pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
+        pygame.display.flip()
 
         processKeys()
 
