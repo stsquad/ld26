@@ -84,7 +84,11 @@ def loop():
 
         dx = speed*math.cos(player.rot)
         dy = speed*math.sin(player.rot)
-        pygame.draw.circle(trailsBitmap, (255,255,255), (int(player.x % 640), int(player.y%480)), 4)
+        pygame.draw.circle(trailsBitmap, (255,255,255), (int(player.x) % 640, int(player.y)%480), 2)
+        pygame.draw.rect(trailsBitmap, (0,0,0), (int(player.x+320-8)%640, 0, 8,480))
+        pygame.draw.rect(trailsBitmap, (0,0,0), (int(player.x-320)%640, 0, 8,480))
+        pygame.draw.rect(trailsBitmap, (0,0,0), (0,int(player.y+240-8)%480, 640,8))
+        pygame.draw.rect(trailsBitmap, (0,0,0), (0,int(player.y-240)%480, 640,8))
         if(player.x - (trailsX*256) > 256): trailsX+=1
         player.x += dx
         player.y += dy
