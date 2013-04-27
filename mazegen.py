@@ -30,7 +30,7 @@ def makeMaze(grid, sx, sy, distance):
     for r in routes:
         if(len(r)>maxroute):
             route = r
-            maxroute = r
+            maxroute = len(r)
     route.append((sx,sy))
     return route
     
