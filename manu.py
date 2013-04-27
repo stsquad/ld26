@@ -14,7 +14,7 @@ class Player:
         self.speed = 0
 
 def init():
-    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly
     pygame.init()
     screen = pygame.display.set_mode((640,480))
     pygame.display.set_caption('Turning circle')
@@ -28,9 +28,15 @@ def init():
     random.seed(2013)
     createMaze(maze)
     #shipPoly = [ (0,2), (2,-2), (0,-1), (-2,-2), (0,2) ]
-    shipPoly = [ (2,2), (2,-2), (-2,-2), (-2,2), (2,2) ]
+
+    shipPoly = [ (1.7,2), (2,1.7), (2,-2), (-2,-2), (-2,1.7), (-1.7,2), (1.7,2) ]
     shipPoly = polyScale(shipPoly, 8)
     shipPoly = polyRotate(shipPoly, -math.pi/2 ) # Adjust so it faces to 0 radians
+
+    windscreenPoly = [ (1.5,1.5), (1.5,1.0), (-1.5, 1.0), (-1.5,1.5) ]
+    windscreenPoly = polyScale(windscreenPoly, 8)
+    windscreenPoly = polyRotate(windscreenPoly, -math.pi/2)
+
     player = Player()
     trailsBitmap = pygame.Surface((640,480))
     trailsBitmap.fill(ROADCOLOUR)
@@ -123,6 +129,11 @@ def loop():
 
         pygame.draw.polygon(screen, (255,255,255), shipTransPoly)
 
+        wRotPoly = polyRotate(windscreenPoly, player.rot)
+        wTransPoly = polyTranslate(wRotPoly, 320,240)
+        pygame.draw.polygon(screen, (0,0,0), wTransPoly)
+
+
         pygame.display.flip()
         if(dead):           
             playerReset()
@@ -196,6 +207,7 @@ def titleScreen():
                     exit(0)
                 elif event.key == K_SPACE:
                     return
+
 def drawDigit(surface, x, y, d):
     surface.blit(numSprite, (x,y), (d*3*3,0,3*3,5*3))
 
