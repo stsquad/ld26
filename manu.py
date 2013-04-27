@@ -11,7 +11,7 @@ class Player:
         self.x = 32*4
         self.y = 32*4
         self.rot = 0
-
+        self.speed = 0
 def init():
     global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap
     pygame.init()
@@ -28,7 +28,6 @@ def init():
     player = Player()
     trailsBitmap = pygame.Surface((640,480))
     trailsBitmap.fill((0,0,0))
-    speed = 3
     trailsX = 0
     trailsY = 0
     miniMap = pygame.Surface((64,64))
@@ -76,10 +75,15 @@ def getMaze(x,y):
     if(x<0 or x>= GSX or y<0 or y>=GSY): return 1
     return maze[x][y]
 
+def makeTrail(x,y):
+    pygame.draw.circle(trailsBitmap, (255,255,255), (int(x) % 640, int(y)%480), 2)
+
+
 def loop():
     global trailsX
     saveQueue = []
     saveDir = []
+    frameCount = 0
     while 1:
         clock.tick(50)
         screen.fill((127,127,127))
@@ -113,19 +117,26 @@ def loop():
         screen.blit(miniMap, (0,0))
 
         pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
-        pygame.draw.circle(trailsBitmap, (255,255,255), (320,240), 8)
+
         pygame.display.flip()
         if(dead):           
             playerReset()
-            if(len(saveQueue)>0):
-                (gridx,gridy) = saveQueue.pop()
+            frameCount = 0
+            if(len(saveQueue)>1):
+                saveQueue.pop()
+                saveDir.pop()
+                (gridx,gridy) = saveQueue[-1]
+                player.rot = saveDir[-1]
                 player.x = gridx*BS+BS/2-320
                 player.y = gridy*BS+BS/2-240
-                player.rot = saveDir.pop()
 
-        dx = speed*math.cos(player.rot)
-        dy = speed*math.sin(player.rot)
-        pygame.draw.circle(trailsBitmap, (255,255,255), (int(player.x) % 640, int(player.y)%480), 2)
+
+        if(player.speed < MAXSPEED):
+            player.speed = player.speed + 0.02
+
+        dx = player.speed*math.cos(player.rot)
+        dy = player.speed*math.sin(player.rot)
+        makeTrail(player.x,player.y)
         pygame.draw.rect(trailsBitmap, (0,0,0), (int(player.x+320-8)%640, 0, 8,480))
         pygame.draw.rect(trailsBitmap, (0,0,0), (int(player.x-320)%640, 0, 8,480))
         pygame.draw.rect(trailsBitmap, (0,0,0), (0,int(player.y+240-8)%480, 640,8))
@@ -142,7 +153,7 @@ def loop():
                 print "Savequeue is now: "
                 print saveQueue
         processKeys()
-
+        frameCount += 1
         for event in pygame.event.get():
             if event.type == QUIT:
                 exit(0)
