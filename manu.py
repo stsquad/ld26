@@ -4,6 +4,7 @@ import random
 import math
 from globs import *
 from polylib import *
+from mazegen import makeMaze
 
 class Player:
     def __init__(self):
@@ -38,8 +39,13 @@ def playerReset():
 def createMaze(maze):
     for x in range(0,64):
         for y in range(0,64):
-            if(x>2 and y>2):
-                maze[x][y] = random.choice([0,1])
+            maze[x][y] = 1
+
+    makeMaze(maze, 1,1)
+    for x in range(0,6):
+        for y in range(0,4):
+            maze[x][y] = 0
+    
 
 def processKeys():
     keys = pygame.key.get_pressed()
