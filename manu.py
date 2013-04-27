@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 import random
+import math
 
 class Player:
     def __init__(self):
@@ -38,6 +39,14 @@ def polyTranslate(poly,x,y):
         newPoly.append((p[0]+x, p[1]+y))
     return newPoly
 
+def polyRotate(poly,rads):
+    newPoly = []
+    for p in poly:
+        newPoly.append((p[0]*math.cos(rads)-p[1]*math.sin(rads),
+                        p[0]*math.sin(rads)+p[1]*math.cos(rads)))
+    return newPoly
+
+
 def loop():
     while 1:
         clock.tick(25)
@@ -47,7 +56,9 @@ def loop():
                 for y in range(0,64):
                     if(maze[x][y] == 1):
                         pygame.draw.rect(screen, (255,255,255), (x*64,y*64,64,64))
-            shipTransPoly = polyTranslate(shipPoly,player.x,player.y)
+            shipRotPoly = polyRotate(shipPoly,1)
+            shipTransPoly = polyTranslate(shipRotPoly,player.x,player.y)
+
             pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
             if event.type == QUIT:
                 exit(0)
