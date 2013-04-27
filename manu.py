@@ -14,11 +14,15 @@ class Player:
         self.speed = 0
 
 def init():
-    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite
     pygame.init()
     screen = pygame.display.set_mode((640,480))
     pygame.display.set_caption('Turning circle')
     clock = pygame.time.Clock()
+    numSprite = pygame.image.load("numbers.gif")
+    
+    numSprite = pygame.transform.scale(numSprite, (numSprite.get_width()*3,numSprite.get_height()*3))
+    numSprite.set_colorkey((255,255,255))
     maze = [0]*GS
     for i in range(0,GS): maze[i] = [0]*GS
     random.seed(2013)
@@ -171,7 +175,7 @@ def loop():
             print "Game complete!"
             print "You finished the game in %f seconds"%(frameCount / 50.0)
             print "Van repair bill: %d quid"%(repairBill*50)
-            return
+            return (frameCount, repairBill)
         frameCount += 1
 
 
@@ -195,13 +199,34 @@ def titleScreen():
                     exit(0)
                 elif event.key == K_SPACE:
                     return
-    
-def winScreen():
+def drawDigit(surface, x, y, d):
+    surface.blit(numSprite, (x,y), (d*3*3,0,3*3,5*3))
+
+def drawNumber(surface, x, y, num):
+    if(num==0):
+        drawDigit(surface,x,y,0)
+        return x-(3*3+2)
+    while(num > 0):
+        d = num % 10
+        drawDigit(surface, x, y, d)
+        x -= (3*3+2)
+        num = int(num / 10)
+    return x
+        
+
+def winScreen(frames,repair):
     titlescreen = pygame.image.load("winscreen.gif")
     titlescreen = pygame.transform.scale(titlescreen, (640,480))
     while 1:
         screen.blit(titlescreen, (0,0,640,480))
+
+        drawNumber(screen,550,220,int(frames/50))
+
+        xpos = drawNumber(screen,600,300,repair*50)
+        drawDigit(screen, xpos, 300, 10)
+
         pygame.display.flip()
+        
         for event in pygame.event.get():
             if event.type == QUIT:
                 exit(0)
@@ -214,6 +239,7 @@ def winScreen():
 
 init()
 while 1:
+    playerReset()
     titleScreen()
-    loop()
-    winScreen()
+    (frames, repair) = loop()
+    winScreen(frames, repair)
