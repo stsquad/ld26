@@ -68,15 +68,12 @@ def createMaze(maze):
         tries += 1
     print "Route through maze: "
     print route
-    print "Route length %d"%len(route)
+    global routeLen
+    routeLen = len(route)
+    print "Route length %d"%routeLen
     for (x,y) in route:
         maze[x][y] = 3
 
-def processKeys():
-    keys = pygame.key.get_pressed()
-    if(keys[K_LEFT]): player.rot -= 0.05
-    if(keys[K_RIGHT]): player.rot += 0.05
-    if(keys[K_s]): player.speed = 1 # cheat
 
 def getMaze(x,y):
     if(x<0 or x>= GSX or y<0 or y>=GSY): return 1
@@ -90,6 +87,7 @@ def loop():
     saveQueue = []
     saveDir = []
     frameCount = 0
+    progress = 0
     while 1:
         clock.tick(50)
         screen.fill((127,127,127))
@@ -121,6 +119,8 @@ def loop():
                         pygame.draw.rect(screen, (0,255,255), (x*BS-player.x,y*BS-player.y,BS,BS),4)
                 elif(getMaze(x,y) == 3):
                         pygame.draw.circle(screen, (0,255,0), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
+                elif(getMaze(x,y) == 4):
+                        pygame.draw.circle(screen, (255,255,0), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
         screen.blit(miniMap, (0,0))
 
         pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
@@ -138,8 +138,14 @@ def loop():
                 player.y = gridy*BS+BS/2-240
 
 
-        if(player.speed < MAXSPEED):
+        keys = pygame.key.get_pressed()
+        if(keys[K_LEFT]): player.rot -= 0.05
+        if(keys[K_RIGHT]): player.rot += 0.05
+        if(keys[K_s]): player.speed = 1 # cheat
+        if(player.speed < MAXSPEED or keys[K_UP]):
             player.speed = player.speed + 0.02
+        if(player.speed > MAXSPEED and not keys[K_UP]):
+            player.speed -= 0.05
 
         dx = player.speed*math.cos(player.rot)
         dy = player.speed*math.sin(player.rot)
@@ -154,13 +160,16 @@ def loop():
         player.y += dy
         gridx = int((player.x+320) / BS)
         gridy = int((player.y+240) / BS)
+        if(maze[gridx][gridy]==3):
+            maze[gridx][gridy]=4
+            progress += 1
+            print "Progress: %d%%"%(int(100*progress/routeLen))
         if(maze[gridx][gridy]==2):
             if((gridx,gridy) not in saveQueue):
                 saveQueue.append((gridx,gridy))
                 saveDir.append(player.rot)
                 print "Savequeue is now: "
                 print saveQueue
-        processKeys()
         frameCount += 1
         for event in pygame.event.get():
             if event.type == QUIT:
