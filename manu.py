@@ -12,7 +12,7 @@ class Player:
         self.rot = 0
 
 def init():
-    global screen, clock, maze, shipPoly, player, speed
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap
     pygame.init()
     screen = pygame.display.set_mode((640,480))
     pygame.display.set_caption('Turning circle')
@@ -25,6 +25,8 @@ def init():
     shipPoly = polyScale(shipPoly, 8)
     shipPoly = polyRotate(shipPoly, -math.pi/2 ) # Adjust so it faces to 0 radians
     player = Player()
+    trailsBitmap = pygame.Surface((640,480))
+    trailsBitmap.fill((0,0,0))
     speed = 4
 
 def playerReset():
@@ -49,12 +51,11 @@ def getMaze(x,y):
 def loop():
     while 1:
         clock.tick(50)
-        screen.fill((0,0,0))
+        screen.blit(trailsBitmap,(0,0))
         dead = False
         shipRotPoly = polyRotate(shipPoly,player.rot)
         shipTransPoly = polyTranslate(shipRotPoly,320,256)
         
-
         for x in range(int(player.x/BS)-1,int(player.x/BS)+6):
             for y in range(int(player.y/BS)-1,int(player.y/BS)+5):
                 if(getMaze(x,y) == 1):
@@ -62,13 +63,17 @@ def loop():
                     if polyIntersectsBlock(shipTransPoly, x*BS-player.x,y*BS-player.y):
                         dead = True
         pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
+        pygame.draw.circle(trailsBitmap, (255,255,255), (320,256), 8)
         pygame.display.flip()
         if(dead): 
             playerReset()
-        player.x += speed*math.cos(player.rot)
-        player.y += speed*math.sin(player.rot)
-        processKeys()
 
+        dx = speed*math.cos(player.rot)
+        dy = speed*math.sin(player.rot)
+        trailsBitmap.blit(trailsBitmap, (-dx,-dy))
+        player.x += dx
+        player.y += dy
+        processKeys()
         for event in pygame.event.get():
             if event.type == QUIT:
                 exit(0)
