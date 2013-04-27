@@ -7,7 +7,7 @@ class Player:
     def __init__(self):
         self.x = 32*4
         self.y = 32*4
-
+        self.rot = 0
 def init():
     global screen, clock, maze, shipPoly, player
     pygame.init()
@@ -46,20 +46,28 @@ def polyRotate(poly,rads):
                         p[0]*math.sin(rads)+p[1]*math.cos(rads)))
     return newPoly
 
+def processKeys():
+    keys = pygame.key.get_pressed()
+    if(keys[K_LEFT]): player.rot += 0.1
+    if(keys[K_RIGHT]): player.rot -= 0.1
+
 
 def loop():
     while 1:
         clock.tick(25)
         pygame.display.flip()
-        for event in pygame.event.get():
-            for x in range(0,64):
-                for y in range(0,64):
-                    if(maze[x][y] == 1):
-                        pygame.draw.rect(screen, (255,255,255), (x*64,y*64,64,64))
-            shipRotPoly = polyRotate(shipPoly,1)
-            shipTransPoly = polyTranslate(shipRotPoly,player.x,player.y)
+        for x in range(0,64):
+            for y in range(0,64):
+                if(maze[x][y] == 1):
+                    pygame.draw.rect(screen, (255,255,255), (x*64,y*64,64,64))
+        shipRotPoly = polyRotate(shipPoly,player.rot)
+        shipTransPoly = polyTranslate(shipRotPoly,player.x,player.y)
+        
+        pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
 
-            pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
+        processKeys()
+
+        for event in pygame.event.get():
             if event.type == QUIT:
                 exit(0)
             elif event.type == KEYDOWN:
