@@ -4,7 +4,7 @@ import random
 import math
 from globs import *
 from polylib import *
-from mazegen import makeMaze
+from mazegen import makeMaze, initMaze
 
 class Player:
     def __init__(self):
@@ -41,6 +41,8 @@ def drawMiniMap(surface, maze):
                 surface.set_at((x,y),(127,127,0))
             elif(maze[x][y]==2): 
                 surface.set_at((x,y),(255,0,255))
+            elif(maze[x][y]==3): 
+                surface.set_at((x,y),(0,255,0))
 
 def playerReset():
     global player
@@ -50,26 +52,31 @@ def createMaze(maze):
     for x in range(0,64):
         for y in range(0,64):
             maze[x][y] = 1
-
-    makeMaze(maze, 1,1)
+    initMaze()
+    route = makeMaze(maze, 1,1,0)
     for x in range(0,6):
         for y in range(0,4):
             maze[x][y] = 0
     saveSpots = 0
     tries = 0
-    while(saveSpots < 100 and tries < 1000):
+    while(saveSpots < 200 and tries < 1000):
         x = random.randint(0,63)
         y = random.randint(0,63)
         if(maze[x][y] == 0):
             maze[x][y] = 2
-            print "Save spot at %d,%d"%(x,y)
             saveSpots += 1
         tries += 1
+    print "Route through maze: "
+    print route
+    print "Route length %d"%len(route)
+    for (x,y) in route:
+        maze[x][y] = 3
 
 def processKeys():
     keys = pygame.key.get_pressed()
     if(keys[K_LEFT]): player.rot -= 0.05
     if(keys[K_RIGHT]): player.rot += 0.05
+    if(keys[K_s]): player.speed = 1 # cheat
 
 def getMaze(x,y):
     if(x<0 or x>= GSX or y<0 or y>=GSY): return 1
@@ -77,7 +84,6 @@ def getMaze(x,y):
 
 def makeTrail(x,y):
     pygame.draw.circle(trailsBitmap, (255,255,255), (int(x) % 640, int(y)%480), 2)
-
 
 def loop():
     global trailsX
@@ -113,7 +119,8 @@ def loop():
                         pygame.draw.rect(screen, (255,0,255), (x*BS-player.x,y*BS-player.y,BS,BS),4)
                     else:
                         pygame.draw.rect(screen, (0,255,255), (x*BS-player.x,y*BS-player.y,BS,BS),4)
-
+                elif(getMaze(x,y) == 3):
+                        pygame.draw.circle(screen, (0,255,0), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
         screen.blit(miniMap, (0,0))
 
         pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
@@ -136,7 +143,8 @@ def loop():
 
         dx = player.speed*math.cos(player.rot)
         dy = player.speed*math.sin(player.rot)
-        makeTrail(player.x,player.y)
+        makeTrail(player.x+8*math.cos(player.rot+math.pi/2),player.y+8*math.sin(player.rot+math.pi/2))
+        makeTrail(player.x+8*math.cos(player.rot-math.pi/2),player.y+8*math.sin(player.rot-math.pi/2))
         pygame.draw.rect(trailsBitmap, (0,0,0), (int(player.x+320-8)%640, 0, 8,480))
         pygame.draw.rect(trailsBitmap, (0,0,0), (int(player.x-320)%640, 0, 8,480))
         pygame.draw.rect(trailsBitmap, (0,0,0), (0,int(player.y+240-8)%480, 640,8))
