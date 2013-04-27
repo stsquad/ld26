@@ -12,22 +12,24 @@ class Player:
         self.y = 32*4
         self.rot = 0
         self.speed = 0
+
 def init():
     global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap
     pygame.init()
     screen = pygame.display.set_mode((640,480))
     pygame.display.set_caption('Turning circle')
     clock = pygame.time.Clock()
-    maze = [0]*64
-    for i in range(0,64): maze[i] = [0]*64
+    maze = [0]*GS
+    for i in range(0,GS): maze[i] = [0]*GS
     random.seed(2013)
     createMaze(maze)
-    shipPoly = [ (0,2), (2,-2), (0,-1), (-2,-2), (0,2) ]
+    #shipPoly = [ (0,2), (2,-2), (0,-1), (-2,-2), (0,2) ]
+    shipPoly = [ (2,2), (2,-2), (-2,-2), (-2,2), (2,2) ]
     shipPoly = polyScale(shipPoly, 8)
     shipPoly = polyRotate(shipPoly, -math.pi/2 ) # Adjust so it faces to 0 radians
     player = Player()
     trailsBitmap = pygame.Surface((640,480))
-    trailsBitmap.fill((0,0,0))
+    trailsBitmap.fill(ROADCOLOUR)
     trailsX = 0
     trailsY = 0
     miniMap = pygame.Surface((64,64))
@@ -35,8 +37,8 @@ def init():
 
 def drawMiniMap(surface, maze):
     surface.fill((0,0,0))
-    for x in range(0,64):
-        for y in range(0,64):
+    for x in range(0,GS):
+        for y in range(0,GS):
             if(maze[x][y]==1): 
                 surface.set_at((x,y),(127,127,0))
             elif(maze[x][y]==2): 
@@ -49,38 +51,31 @@ def playerReset():
     player = Player()
 
 def createMaze(maze):
-    for x in range(0,64):
-        for y in range(0,64):
+    for x in range(0,GS):
+        for y in range(0,GS):
             maze[x][y] = 1
     initMaze()
     route = makeMaze(maze, 1,1,0)
     for x in range(0,6):
         for y in range(0,4):
             maze[x][y] = 0
-    saveSpots = 0
-    tries = 0
-    while(saveSpots < 200 and tries < 1000):
-        x = random.randint(0,63)
-        y = random.randint(0,63)
-        if(maze[x][y] == 0):
-            maze[x][y] = 2
-            saveSpots += 1
-        tries += 1
+
     print "Route through maze: "
     print route
     global routeLen
     routeLen = len(route)
     print "Route length %d"%routeLen
     for (x,y) in route:
-        maze[x][y] = 3
-
+        maze[x][y] = 2
+    (fx,fy) = route[0]
+    maze[fx][fy] = 5
 
 def getMaze(x,y):
-    if(x<0 or x>= GSX or y<0 or y>=GSY): return 1
+    if(x<0 or x>= GS or y<0 or y>=GS): return 1
     return maze[x][y]
 
 def makeTrail(x,y):
-    pygame.draw.circle(trailsBitmap, (255,255,255), (int(x) % 640, int(y)%480), 2)
+    pygame.draw.circle(trailsBitmap, (0,0,0), (int(x) % 640, int(y)%480), 2)
 
 def loop():
     global trailsX
@@ -88,6 +83,7 @@ def loop():
     saveDir = []
     frameCount = 0
     progress = 0
+    repairBill = 0
     while 1:
         clock.tick(50)
         screen.fill((127,127,127))
@@ -101,7 +97,6 @@ def loop():
         screen.blit(trailsBitmap,(0,h),(w,0,640,512))
         screen.blit(trailsBitmap,(offX, h), (0,0, 640,512))
 
-        
         dead = False
         shipRotPoly = polyRotate(shipPoly,player.rot)
         shipTransPoly = polyTranslate(shipRotPoly,320,240)
@@ -114,13 +109,15 @@ def loop():
                         dead = True
                 elif(getMaze(x,y) == 2):
                     if (x,y) in saveQueue:
-                        pygame.draw.rect(screen, (255,0,255), (x*BS-player.x,y*BS-player.y,BS,BS),4)
+                        pygame.draw.circle(screen, (255,0,255), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
                     else:
-                        pygame.draw.rect(screen, (0,255,255), (x*BS-player.x,y*BS-player.y,BS,BS),4)
+                        pygame.draw.circle(screen, (0,255,255), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
                 elif(getMaze(x,y) == 3):
                         pygame.draw.circle(screen, (0,255,0), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
                 elif(getMaze(x,y) == 4):
                         pygame.draw.circle(screen, (255,255,0), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
+                elif(getMaze(x,y) == 5):
+                        pygame.draw.circle(screen, (0,255,0), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),16)
         screen.blit(miniMap, (0,0))
 
         pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
@@ -128,7 +125,7 @@ def loop():
         pygame.display.flip()
         if(dead):           
             playerReset()
-            frameCount = 0
+            repairBill += 1
             if(len(saveQueue)>1):
                 saveQueue.pop()
                 saveDir.pop()
@@ -151,10 +148,10 @@ def loop():
         dy = player.speed*math.sin(player.rot)
         makeTrail(player.x+8*math.cos(player.rot+math.pi/2),player.y+8*math.sin(player.rot+math.pi/2))
         makeTrail(player.x+8*math.cos(player.rot-math.pi/2),player.y+8*math.sin(player.rot-math.pi/2))
-        pygame.draw.rect(trailsBitmap, (0,0,0), (int(player.x+320-8)%640, 0, 8,480))
-        pygame.draw.rect(trailsBitmap, (0,0,0), (int(player.x-320)%640, 0, 8,480))
-        pygame.draw.rect(trailsBitmap, (0,0,0), (0,int(player.y+240-8)%480, 640,8))
-        pygame.draw.rect(trailsBitmap, (0,0,0), (0,int(player.y-240)%480, 640,8))
+        pygame.draw.rect(trailsBitmap, ROADCOLOUR, (int(player.x+320-8)%640, 0, 8,480))
+        pygame.draw.rect(trailsBitmap, ROADCOLOUR, (int(player.x-320)%640, 0, 8,480))
+        pygame.draw.rect(trailsBitmap, ROADCOLOUR, (0,int(player.y+240-8)%480, 640,8))
+        pygame.draw.rect(trailsBitmap, ROADCOLOUR, (0,int(player.y-240)%480, 640,8))
         if(player.x - (trailsX*256) > 256): trailsX+=1
         player.x += dx
         player.y += dy
@@ -163,14 +160,21 @@ def loop():
         if(maze[gridx][gridy]==3):
             maze[gridx][gridy]=4
             progress += 1
-            print "Progress: %d%%"%(int(100*progress/routeLen))
-        if(maze[gridx][gridy]==2):
+            print "Progress: %d of %d (%d%%)"%(progress,routeLen,int(100*progress/routeLen))
+        elif(maze[gridx][gridy]==2):
             if((gridx,gridy) not in saveQueue):
                 saveQueue.append((gridx,gridy))
                 saveDir.append(player.rot)
                 print "Savequeue is now: "
                 print saveQueue
+        if(maze[gridx][gridy]==5 or keys[K_w]):
+            print "Game complete!"
+            print "You finished the game in %f seconds"%(frameCount / 50.0)
+            print "Van repair bill: %d quid"%(repairBill*50)
+            return
         frameCount += 1
+
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 exit(0)
@@ -178,5 +182,38 @@ def loop():
                 if event.key == K_ESCAPE or event.key == K_q:
                     exit(0)
 
+def titleScreen():
+    titlescreen = pygame.image.load("titlescreen.gif")
+    while 1:
+        screen.blit(titlescreen, (0,0))
+        pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                exit(0)
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE or event.key == K_q:
+                    exit(0)
+                elif event.key == K_SPACE:
+                    return
+    
+def winScreen():
+    titlescreen = pygame.image.load("winscreen.gif")
+    titlescreen = pygame.transform.scale(titlescreen, (640,480))
+    while 1:
+        screen.blit(titlescreen, (0,0,640,480))
+        pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                exit(0)
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE or event.key == K_q:
+                    exit(0)
+                elif event.key == K_SPACE:
+                    return
+
+
 init()
-loop()
+while 1:
+    titleScreen()
+    loop()
+    winScreen()
