@@ -20,6 +20,7 @@ def init():
     createMaze(maze)
     shipPoly = [ (0,2), (2,-2), (0,-1), (-2,-2), (0,2) ]
     shipPoly = polyScale(shipPoly, 32)
+    shipPoly = polyRotate(shipPoly, -math.pi/2 ) # Adjust so it faces to 0 radians
     player = Player()
 
 def createMaze(maze):
