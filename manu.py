@@ -13,7 +13,7 @@ class Player:
         self.rot = 0
 
 def init():
-    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap
     pygame.init()
     screen = pygame.display.set_mode((640,480))
     pygame.display.set_caption('Turning circle')
@@ -28,9 +28,20 @@ def init():
     player = Player()
     trailsBitmap = pygame.Surface((640,480))
     trailsBitmap.fill((0,0,0))
-    speed = 4
+    speed = 3
     trailsX = 0
     trailsY = 0
+    miniMap = pygame.Surface((64,64))
+    drawMiniMap(miniMap, maze)
+
+def drawMiniMap(surface, maze):
+    surface.fill((0,0,0))
+    for x in range(0,64):
+        for y in range(0,64):
+            if(maze[x][y]==1): 
+                surface.set_at((x,y),(127,127,0))
+            elif(maze[x][y]==2): 
+                surface.set_at((x,y),(255,0,255))
 
 def playerReset():
     global player
@@ -45,7 +56,16 @@ def createMaze(maze):
     for x in range(0,6):
         for y in range(0,4):
             maze[x][y] = 0
-    
+    saveSpots = 0
+    tries = 0
+    while(saveSpots < 100 and tries < 1000):
+        x = random.randint(0,63)
+        y = random.randint(0,63)
+        if(maze[x][y] == 0):
+            maze[x][y] = 2
+            print "Save spot at %d,%d"%(x,y)
+            saveSpots += 1
+        tries += 1
 
 def processKeys():
     keys = pygame.key.get_pressed()
@@ -58,6 +78,8 @@ def getMaze(x,y):
 
 def loop():
     global trailsX
+    saveQueue = []
+    saveDir = []
     while 1:
         clock.tick(50)
         screen.fill((127,127,127))
@@ -82,11 +104,24 @@ def loop():
                     pygame.draw.rect(screen, (255,255,255), (x*BS-player.x,y*BS-player.y,BS,BS))
                     if polyIntersectsBlock(shipTransPoly, x*BS-player.x,y*BS-player.y):
                         dead = True
+                elif(getMaze(x,y) == 2):
+                    if (x,y) in saveQueue:
+                        pygame.draw.rect(screen, (255,0,255), (x*BS-player.x,y*BS-player.y,BS,BS),4)
+                    else:
+                        pygame.draw.rect(screen, (0,255,255), (x*BS-player.x,y*BS-player.y,BS,BS),4)
+
+        screen.blit(miniMap, (0,0))
+
         pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
         pygame.draw.circle(trailsBitmap, (255,255,255), (320,240), 8)
         pygame.display.flip()
-        if(dead): 
+        if(dead):           
             playerReset()
+            if(len(saveQueue)>0):
+                (gridx,gridy) = saveQueue.pop()
+                player.x = gridx*BS+BS/2-320
+                player.y = gridy*BS+BS/2-240
+                player.rot = saveDir.pop()
 
         dx = speed*math.cos(player.rot)
         dy = speed*math.sin(player.rot)
@@ -98,7 +133,16 @@ def loop():
         if(player.x - (trailsX*256) > 256): trailsX+=1
         player.x += dx
         player.y += dy
+        gridx = int((player.x+320) / BS)
+        gridy = int((player.y+240) / BS)
+        if(maze[gridx][gridy]==2):
+            if((gridx,gridy) not in saveQueue):
+                saveQueue.append((gridx,gridy))
+                saveDir.append(player.rot)
+                print "Savequeue is now: "
+                print saveQueue
         processKeys()
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 exit(0)
