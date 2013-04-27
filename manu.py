@@ -117,6 +117,10 @@ def loop():
                     pygame.draw.rect(screen, (255,255,255), (x*BS-player.x,y*BS-player.y,BS,BS))
                     if polyIntersectsBlock(shipTransPoly, x*BS-player.x,y*BS-player.y):
                         dead = True
+                        expletive = random.choice(["FUCK", "SHIT"])
+                        drawText(screen, 320+64, 240-64, expletive)
+
+
                 elif(getMaze(x,y) == 2):
                     if (x,y) in saveQueue:
                         pygame.draw.circle(screen, (255,255,255), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
@@ -135,8 +139,6 @@ def loop():
         wRotPoly = polyRotate(windscreenPoly, player.rot)
         wTransPoly = polyTranslate(wRotPoly, 320,240)
         pygame.draw.polygon(screen, (0,0,0), wTransPoly)
-
-        drawText(screen, 320, 240, "HELLO")
 
         pygame.display.flip()
         if(dead):           
