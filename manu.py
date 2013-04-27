@@ -65,7 +65,8 @@ def loop():
         
         pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
         pygame.display.flip()
-
+        player.x += math.cos(player.rot)
+        player.y += math.sin(player.rot)
         processKeys()
 
         for event in pygame.event.get():
