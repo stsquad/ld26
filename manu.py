@@ -113,9 +113,9 @@ def loop():
                         dead = True
                 elif(getMaze(x,y) == 2):
                     if (x,y) in saveQueue:
-                        pygame.draw.circle(screen, (255,0,255), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
+                        pygame.draw.circle(screen, (255,255,255), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
                     else:
-                        pygame.draw.circle(screen, (0,255,255), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
+                        pygame.draw.circle(screen, (192,192,192), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
                 elif(getMaze(x,y) == 3):
                         pygame.draw.circle(screen, (0,255,0), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
                 elif(getMaze(x,y) == 4):
@@ -124,7 +124,7 @@ def loop():
                         pygame.draw.circle(screen, (0,255,0), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),16)
         screen.blit(miniMap, (0,0))
 
-        pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
+        pygame.draw.polygon(screen, (255,255,255), shipTransPoly)
 
         pygame.display.flip()
         if(dead):           
