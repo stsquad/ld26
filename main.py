@@ -21,7 +21,7 @@ class Follower:
         self.y = player.y-128*math.sin(player.rot)
 
 def init():
-    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower, idleSound, vanSound, vanStartSound, hornSound, sound
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower, idleSound, vanSound, vanStartSound, hornSound, sound, hard
     pygame.mixer.pre_init(frequency=8000,size=-16,channels=2)
     pygame.init()
     screen = pygame.display.set_mode((640,480))
@@ -67,6 +67,7 @@ def init():
     vanStartSound = pygame.mixer.Sound("data/vannoise-startup.wav")
     hornSound = pygame.mixer.Sound("data/horn8000.wav")
     sound = True
+    hard = False
 
 
 def drawMiniMap(surface, maze):
@@ -273,7 +274,7 @@ def loop():
                     exit(0)
 
 def titleScreen():
-    global sound
+    global sound, hard
     titlescreen = pygame.image.load("data/titlescreen3.gif")
     titlescreen = pygame.transform.scale(titlescreen,(640,480))
     soundIcon = pygame.image.load("data/soundicon.png")
@@ -282,10 +283,15 @@ def titleScreen():
     gearIcon = pygame.image.load("data/gearlever.png")
     gearIcon.set_colorkey((255,255,255))
     gearIcon = pygame.transform.scale(gearIcon, (gearIcon.get_width()*5, gearIcon.get_height()*5))
+    invertedGear = pygame.transform.flip(gearIcon, True, False)
     while 1:
         screen.blit(titlescreen, (0,0))
         if(sound): screen.blit(soundIcon, (190,280))
-        screen.blit(gearIcon, (245,340))
+        
+        if(hard):
+            screen.blit(invertedGear, (280,340))
+        else:
+            screen.blit(gearIcon, (245,340))
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -303,6 +309,8 @@ def titleScreen():
                         idleSound.play(loops=-1)
                     else:
                         idleSound.stop()
+                elif event.key == K_h:
+                    hard = not hard
 
 def drawChar(surface, x, y, c):
     pos = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(c)+1
