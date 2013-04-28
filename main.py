@@ -322,6 +322,7 @@ def titleScreen():
             screen.blit(invertedGear, (280,340))
         else:
             screen.blit(gearIcon, (245,340))
+
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -336,6 +337,12 @@ def titleScreen():
                 elif event.key == K_s:
                     toggleSound()
                 elif event.key == K_h:
+                    toggleHard()
+            elif event.type == MOUSEBUTTONDOWN:
+                (x,y) = event.pos
+                if(x>=180 and x<=380 and y>=270 and y<=(270+64)):
+                    toggleSound()
+                elif(x>=235 and x<=335 and y>=340 and y<=460):
                     toggleHard()
 
 def drawChar(surface, x, y, c):
