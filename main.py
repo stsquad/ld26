@@ -21,7 +21,8 @@ class Follower:
         self.y = player.y-128*math.sin(player.rot)
 
 def init():
-    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower, idleSound, vanSound, vanStartSound, hornSound, sound, hard
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower, idleSound, vanSound, vanStartSound, hornSound, sound, hard, maxspeed, turnrate
+    
     pygame.mixer.pre_init(frequency=8000,size=-16,channels=2)
     pygame.init()
     screen = pygame.display.set_mode((640,480))
@@ -68,7 +69,8 @@ def init():
     hornSound = pygame.mixer.Sound("data/horn8000.wav")
     sound = True
     hard = False
-
+    maxspeed = MAXSPEED
+    turnrate = TURNRATE
 
 def drawMiniMap(surface, maze):
     surface.fill((0,0,0))
@@ -132,6 +134,7 @@ def loop():
     timeout = 150
     playerReset()
     hornTimeout = 0
+    if(hard): print "Starting game in hard mode; maxspeed=%d"%maxspeed
     while 1:
         clock.tick(50)
         screen.fill((127,127,127))
@@ -223,12 +226,11 @@ def loop():
 
 
         keys = pygame.key.get_pressed()
-        if(keys[K_LEFT]): player.rot -= TURNRATE
-        if(keys[K_RIGHT]): player.rot += TURNRATE
-        if(keys[K_s]): player.speed = 1 # cheat
-        if(player.speed < MAXSPEED or keys[K_UP]):
+        if(keys[K_LEFT]): player.rot -= turnrate
+        if(keys[K_RIGHT]): player.rot += turnrate
+        if(player.speed < maxspeed or keys[K_UP]):
             player.speed = player.speed + 0.02
-        if(player.speed > MAXSPEED and not keys[K_UP]):
+        if(player.speed > maxspeed and not keys[K_UP]):
             player.speed -= 0.05
 
         dx = player.speed*math.cos(player.rot)
@@ -274,7 +276,7 @@ def loop():
                     exit(0)
 
 def titleScreen():
-    global sound, hard
+    global sound, hard, maxspeed, turnrate
     titlescreen = pygame.image.load("data/titlescreen3.gif")
     titlescreen = pygame.transform.scale(titlescreen,(640,480))
     soundIcon = pygame.image.load("data/soundicon.png")
@@ -311,6 +313,12 @@ def titleScreen():
                         idleSound.stop()
                 elif event.key == K_h:
                     hard = not hard
+                    if(hard):
+                        maxspeed = 10
+                        turnrate = 0.1
+                    else:
+                        maxspeed = 6
+                        turnrate = 0.05
 
 def drawChar(surface, x, y, c):
     pos = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(c)+1
