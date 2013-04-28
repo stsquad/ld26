@@ -285,6 +285,24 @@ def loop():
                 if event.key == K_ESCAPE or event.key == K_q:
                     exit(0)
 
+def toggleSound():
+    global sound
+    sound = not sound
+    if(sound):
+        idleSound.play(loops=-1)
+    else:
+        idleSound.stop()
+
+def toggleHard():
+    global hard, maxspeed, turnrate
+    hard = not hard
+    if(hard):
+        maxspeed = 10
+        turnrate = 0.1
+    else:
+        maxspeed = 6
+        turnrate = 0.05
+
 def titleScreen():
     global sound, hard, maxspeed, turnrate
     titlescreen = pygame.image.load("data/titlescreen3.gif")
@@ -316,19 +334,9 @@ def titleScreen():
                 elif event.key == K_i:
                     return 1
                 elif event.key == K_s:
-                    sound = not sound
-                    if(sound):
-                        idleSound.play(loops=-1)
-                    else:
-                        idleSound.stop()
+                    toggleSound()
                 elif event.key == K_h:
-                    hard = not hard
-                    if(hard):
-                        maxspeed = 10
-                        turnrate = 0.1
-                    else:
-                        maxspeed = 6
-                        turnrate = 0.05
+                    toggleHard()
 
 def drawChar(surface, x, y, c):
     pos = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(c)+1
