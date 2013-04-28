@@ -2,12 +2,12 @@ import pygame
 from pygame.locals import *
 import random
 import math
-import array
 from globs import *
 from polylib import *
 from collections import deque
 from mazegen import makeMaze, initMaze
-import pygame.sndarray
+import sys
+
 
 class Player:
     def __init__(self):
@@ -280,10 +280,10 @@ def loop():
 
         for event in pygame.event.get():
             if event.type == QUIT:
-                exit(0)
+                sys.exit(0)
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE or event.key == K_q:
-                    exit(0)
+                    sys.exit(0)
 
 def toggleSound():
     global sound
@@ -326,10 +326,10 @@ def titleScreen():
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == QUIT:
-                exit(0)
+                sys.exit(0)
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE or event.key == K_q:
-                    exit(0)
+                    sys.exit(0)
                 elif event.key == K_SPACE:
                     return 0
                 elif event.key == K_i:
@@ -389,10 +389,10 @@ def winScreen(frames,repair):
         
         for event in pygame.event.get():
             if event.type == QUIT:
-                exit(0)
+                sys.exit(0)
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE or event.key == K_q:
-                    exit(0)
+                    sys.exit(0)
                 elif event.key == K_SPACE:
                     return
 
@@ -405,10 +405,10 @@ def infoScreen():
         
         for event in pygame.event.get():
             if event.type == QUIT:
-                exit(0)
+                sys.exit(0)
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE or event.key == K_q:
-                    exit(0)
+                    sys.exit(0)
                 elif event.key == K_SPACE:
                     return
 
