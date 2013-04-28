@@ -272,8 +272,16 @@ def loop():
 def titleScreen():
     titlescreen = pygame.image.load("data/titlescreen3.gif")
     titlescreen = pygame.transform.scale(titlescreen,(640,480))
+    soundIcon = pygame.image.load("data/soundicon.png")
+    soundIcon.set_colorkey((255,255,255))
+    soundIcon = pygame.transform.scale(soundIcon, (soundIcon.get_width()*5, soundIcon.get_height()*5))
+    gearIcon = pygame.image.load("data/gearlever.png")
+    gearIcon.set_colorkey((255,255,255))
+    gearIcon = pygame.transform.scale(gearIcon, (gearIcon.get_width()*5, gearIcon.get_height()*5))
     while 1:
         screen.blit(titlescreen, (0,0))
+        screen.blit(soundIcon, (190,280))
+        screen.blit(gearIcon, (245,340))
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == QUIT:
