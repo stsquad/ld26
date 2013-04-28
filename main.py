@@ -21,7 +21,7 @@ class Follower:
         self.y = player.y-128*math.sin(player.rot)
 
 def init():
-    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower, idleSound, vanSound, vanStartSound, hornSound
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower, idleSound, vanSound, vanStartSound, hornSound, sound
     pygame.mixer.pre_init(frequency=8000,size=-16,channels=2)
     pygame.init()
     screen = pygame.display.set_mode((640,480))
@@ -66,6 +66,9 @@ def init():
     vanSound = pygame.mixer.Sound("data/vannoise.wav")
     vanStartSound = pygame.mixer.Sound("data/vannoise-startup.wav")
     hornSound = pygame.mixer.Sound("data/horn8000.wav")
+    sound = True
+
+
 def drawMiniMap(surface, maze):
     surface.fill((0,0,0))
     for x in range(0,GS):
@@ -81,7 +84,7 @@ def playerReset():
     global player
     player = Player()
     vanSound.stop()
-    vanStartSound.play()
+    if(sound): vanStartSound.play()
 
 def createMaze(maze):
     for x in range(0,GS):
@@ -199,7 +202,7 @@ def loop():
                 flashTimeout = random.randint(0,400)
 
         hornTimeout -= 1
-        if(hornTimeout<=0):
+        if(hornTimeout<=0 and sound):
             hornSound.play()
             hornTimeout = random.randint(0,200)
 
@@ -260,7 +263,7 @@ def loop():
         if(timeout > 0):
             timeout -= 1
             if(timeout == 0):
-                vanSound.play(loops=-1)
+                if(sound): vanSound.play(loops=-1)
 
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -270,6 +273,7 @@ def loop():
                     exit(0)
 
 def titleScreen():
+    global sound
     titlescreen = pygame.image.load("data/titlescreen3.gif")
     titlescreen = pygame.transform.scale(titlescreen,(640,480))
     soundIcon = pygame.image.load("data/soundicon.png")
@@ -280,7 +284,7 @@ def titleScreen():
     gearIcon = pygame.transform.scale(gearIcon, (gearIcon.get_width()*5, gearIcon.get_height()*5))
     while 1:
         screen.blit(titlescreen, (0,0))
-        screen.blit(soundIcon, (190,280))
+        if(sound): screen.blit(soundIcon, (190,280))
         screen.blit(gearIcon, (245,340))
         pygame.display.flip()
         for event in pygame.event.get():
@@ -291,8 +295,14 @@ def titleScreen():
                     exit(0)
                 elif event.key == K_SPACE:
                     return 0
-                elif event.key == K_s:
+                elif event.key == K_i:
                     return 1
+                elif event.key == K_s:
+                    sound = not sound
+                    if(sound):
+                        idleSound.play(loops=-1)
+                    else:
+                        idleSound.stop()
 
 def drawChar(surface, x, y, c):
     pos = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(c)+1
@@ -365,7 +375,7 @@ def infoScreen():
 init()
 while 1:
     playerReset()
-    idleSound.play(loops=-1)
+    if(sound): idleSound.play(loops=-1)
     while(titleScreen()==1):
         infoScreen()    
     idleSound.stop()
