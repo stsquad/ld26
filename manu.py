@@ -116,6 +116,7 @@ def loop():
     chaseVanX = 0
     chaseVanY = 0
     chaseVanD = 0
+    flashTimeout = 0
     while 1:
         clock.tick(50)
         screen.fill((127,127,127))
@@ -177,10 +178,14 @@ def loop():
         shipTransPoly = polyTranslate(shipRotPoly,320+chaseVanX-player.x,240+chaseVanY-player.y)
         pygame.draw.polygon(screen, (0,0,0), shipTransPoly)
 
-        if(frameCount % 100 < 4):
+
+        flashTimeout -= 1
+        if(flashTimeout<=4):
             lRotPoly = polyRotate(lightPoly, chaseVanD)
             lTransPoly = polyTranslate(lRotPoly, 320+chaseVanX-player.x,240+chaseVanY-player.y)
             pygame.draw.polygon(screen, (255,255,0), lTransPoly)
+            if(flashTimeout <=0):
+                flashTimeout = random.randint(0,200)
 
         pygame.display.flip()
         if(dead):           
@@ -255,7 +260,9 @@ def titleScreen():
                 if event.key == K_ESCAPE or event.key == K_q:
                     exit(0)
                 elif event.key == K_SPACE:
-                    return
+                    return 0
+                elif event.key == K_s:
+                    return 1
 
 def drawChar(surface, x, y, c):
     pos = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(c)+1
@@ -308,10 +315,27 @@ def winScreen(frames,repair):
                 elif event.key == K_SPACE:
                     return
 
+def infoScreen():
+    infoscreen = pygame.image.load("infoscreen.gif")
+    infoscreen = pygame.transform.scale(infoscreen, (640,480))
+    while 1:
+        screen.blit(infoscreen, (0,0,640,480))
+        pygame.display.flip()
+        
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                exit(0)
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE or event.key == K_q:
+                    exit(0)
+                elif event.key == K_SPACE:
+                    return
+
 
 init()
 while 1:
     playerReset()
-    titleScreen()
+    while(titleScreen()==1):
+        infoScreen()    
     (frames, repair) = loop()
     winScreen(frames, repair)
