@@ -219,8 +219,8 @@ def loop():
 
 
         keys = pygame.key.get_pressed()
-        if(keys[K_LEFT]): player.rot -= 0.05
-        if(keys[K_RIGHT]): player.rot += 0.05
+        if(keys[K_LEFT]): player.rot -= TURNRATE
+        if(keys[K_RIGHT]): player.rot += TURNRATE
         if(keys[K_s]): player.speed = 1 # cheat
         if(player.speed < MAXSPEED or keys[K_UP]):
             player.speed = player.speed + 0.02
@@ -360,5 +360,7 @@ while 1:
     while(titleScreen()==1):
         infoScreen()    
     idleSound.stop()
+    vanSound.stop()
     (frames, repair) = loop()
+    vanSound.stop()
     winScreen(frames, repair)
