@@ -21,7 +21,7 @@ class Follower:
         self.y = player.y-128*math.sin(player.rot)
 
 def init():
-    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower, idleSound, vanSound, vanStartSound
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower, idleSound, vanSound, vanStartSound, hornSound
     pygame.mixer.pre_init(frequency=8000,size=-16,channels=2)
     pygame.init()
     screen = pygame.display.set_mode((640,480))
@@ -65,7 +65,7 @@ def init():
     idleSound = pygame.mixer.Sound("vanidle-8000.wav")
     vanSound = pygame.mixer.Sound("vannoise.wav")
     vanStartSound = pygame.mixer.Sound("vannoise-startup.wav")
-
+    hornSound = pygame.mixer.Sound("horn8000.wav")
 def drawMiniMap(surface, maze):
     surface.fill((0,0,0))
     for x in range(0,GS):
@@ -127,6 +127,7 @@ def loop():
     flashTimeout = 0
     timeout = 150
     playerReset()
+    hornTimeout = 0
     while 1:
         clock.tick(50)
         screen.fill((127,127,127))
@@ -195,7 +196,13 @@ def loop():
             lTransPoly = polyTranslate(lRotPoly, 320+chaseVanX-player.x,240+chaseVanY-player.y)
             pygame.draw.polygon(screen, (255,255,0), lTransPoly)
             if(flashTimeout <=0):
-                flashTimeout = random.randint(0,200)
+                flashTimeout = random.randint(0,400)
+
+        hornTimeout -= 1
+        if(hornTimeout<=0):
+            hornSound.play()
+            hornTimeout = random.randint(0,200)
+
 
         pygame.display.flip()
         if(dead):           
