@@ -25,7 +25,7 @@ def init():
     pygame.mixer.pre_init(frequency=8000,size=-16,channels=2)
     pygame.init()
     screen = pygame.display.set_mode((640,480))
-    pygame.display.set_caption('Birmingham Van Adventure 1000')
+    pygame.display.set_caption('Stop following me')
     clock = pygame.time.Clock()
     numSprite = pygame.image.load("numbers.gif")
     numSprite = pygame.transform.scale(numSprite, (numSprite.get_width()*3,numSprite.get_height()*3))
@@ -152,7 +152,7 @@ def loop():
                     pygame.draw.rect(screen, (255,255,255), (x*BS-player.x,y*BS-player.y,BS,BS))
                     if polyIntersectsBlock(shipTransPoly, x*BS-player.x,y*BS-player.y):
                         dead = True
-                        expletive = random.choice(["FUCK", "SHIT"])
+                        expletive = random.choice(["DAMN", "OOPS"])
                         drawText(screen, 320+64, 240-64, expletive)
                 elif(getMaze(x,y) == 2):
                     if (x,y) in saveQueue:
