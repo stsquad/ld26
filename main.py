@@ -270,7 +270,8 @@ def loop():
                     exit(0)
 
 def titleScreen():
-    titlescreen = pygame.image.load("data/titlescreen.gif")
+    titlescreen = pygame.image.load("data/titlescreen3.gif")
+    titlescreen = pygame.transform.scale(titlescreen,(640,480))
     while 1:
         screen.blit(titlescreen, (0,0))
         pygame.display.flip()
