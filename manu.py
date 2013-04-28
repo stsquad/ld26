@@ -2,9 +2,11 @@ import pygame
 from pygame.locals import *
 import random
 import math
+import array
 from globs import *
 from polylib import *
 from mazegen import makeMaze, initMaze
+import pygame.sndarray
 
 class Player:
     def __init__(self):
@@ -19,7 +21,8 @@ class Follower:
         self.y = player.y-128*math.sin(player.rot)
 
 def init():
-    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower, idleSound, vanSound, vanStartSound
+    pygame.mixer.pre_init(frequency=8000,size=-16,channels=2)
     pygame.init()
     screen = pygame.display.set_mode((640,480))
     pygame.display.set_caption('Birmingham Van Adventure 1000')
@@ -59,6 +62,9 @@ def init():
     trailsY = 0
     miniMap = pygame.Surface((64,64))
     drawMiniMap(miniMap, maze)
+    idleSound = pygame.mixer.Sound("vanidle-8000.wav")
+    vanSound = pygame.mixer.Sound("vannoise.wav")
+    vanStartSound = pygame.mixer.Sound("vannoise-startup.wav")
 
 def drawMiniMap(surface, maze):
     surface.fill((0,0,0))
@@ -74,6 +80,8 @@ def drawMiniMap(surface, maze):
 def playerReset():
     global player
     player = Player()
+    vanSound.stop()
+    vanStartSound.play()
 
 def createMaze(maze):
     for x in range(0,GS):
@@ -117,6 +125,8 @@ def loop():
     chaseVanY = 0
     chaseVanD = 0
     flashTimeout = 0
+    timeout = 150
+    playerReset()
     while 1:
         clock.tick(50)
         screen.fill((127,127,127))
@@ -190,6 +200,7 @@ def loop():
         pygame.display.flip()
         if(dead):           
             playerReset()
+            timeout = 120
             repairBill += 1
             if(len(saveQueue)>1):
                 saveQueue.pop()
@@ -239,7 +250,10 @@ def loop():
             print "Van repair bill: %d quid"%(repairBill*50)
             return (frameCount, repairBill)
         frameCount += 1
-
+        if(timeout > 0):
+            timeout -= 1
+            if(timeout == 0):
+                vanSound.play(loops=-1)
 
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -335,7 +349,9 @@ def infoScreen():
 init()
 while 1:
     playerReset()
+    idleSound.play(loops=-1)
     while(titleScreen()==1):
         infoScreen()    
+    idleSound.stop()
     (frames, repair) = loop()
     winScreen(frames, repair)
