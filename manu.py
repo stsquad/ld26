@@ -13,8 +13,13 @@ class Player:
         self.rot = 0
         self.speed = 0
 
+class Follower:
+    def __init__(self, player):
+        self.x = player.x-128*math.cos(player.rot)
+        self.y = player.y-128*math.sin(player.rot)
+
 def init():
-    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower
     pygame.init()
     screen = pygame.display.set_mode((640,480))
     pygame.display.set_caption('Birmingham Van Adventure 1000')
@@ -46,6 +51,8 @@ def init():
     lightPoly = polyRotate(lightPoly, -math.pi/2)
 
     player = Player()
+    follower = Follower(player)
+
     trailsBitmap = pygame.Surface((640,480))
     trailsBitmap.fill(ROADCOLOUR)
     trailsX = 0
@@ -99,6 +106,7 @@ def loop():
     frameCount = 0
     progress = 0
     repairBill = 0
+    oldPos = []
     while 1:
         clock.tick(50)
         screen.fill((127,127,127))
@@ -125,8 +133,6 @@ def loop():
                         dead = True
                         expletive = random.choice(["FUCK", "SHIT"])
                         drawText(screen, 320+64, 240-64, expletive)
-
-
                 elif(getMaze(x,y) == 2):
                     if (x,y) in saveQueue:
                         pygame.draw.circle(screen, (255,255,255), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
@@ -138,6 +144,7 @@ def loop():
                         pygame.draw.circle(screen, (255,255,0), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),8)
                 elif(getMaze(x,y) == 5):
                         pygame.draw.circle(screen, (0,255,0), (int(x*BS-player.x+BS/2),int(y*BS-player.y+BS/2)),16)
+
         #screen.blit(miniMap, (0,0))
 
         pygame.draw.polygon(screen, (255,255,255), shipTransPoly)
@@ -149,6 +156,11 @@ def loop():
         lRotPoly = polyRotate(lightPoly, player.rot)
         lTransPoly = polyTranslate(lRotPoly, 320,240)
         pygame.draw.polygon(screen, (255,255,0), lTransPoly)
+
+        pygame.draw.circle(screen, (255,0,0), (int(follower.x), int(follower.y)), 4)
+        if(len(oldPos)>5):
+            (fx,fy) = oldPos.pop(0)
+            pygame.draw.circle(screen, (255,0,0), (int(320+fx-player.x), int(240+fy-player.y)), 4)
 
         pygame.display.flip()
         if(dead):           
@@ -181,6 +193,7 @@ def loop():
         pygame.draw.rect(trailsBitmap, ROADCOLOUR, (0,int(player.y+240-8)%480, 640,8))
         pygame.draw.rect(trailsBitmap, ROADCOLOUR, (0,int(player.y-240)%480, 640,8))
         if(player.x - (trailsX*256) > 256): trailsX+=1
+        oldPos.append((player.x,player.y))
         player.x += dx
         player.y += dy
         gridx = int((player.x+320) / BS)
