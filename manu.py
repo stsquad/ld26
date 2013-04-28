@@ -99,6 +99,11 @@ def getMaze(x,y):
 def makeTrail(x,y):
     pygame.draw.circle(trailsBitmap, (0,0,0), (int(x) % 640, int(y)%480), 2)
 
+def dist((x1,y1), (x2,y2)):
+    dx = x2-x1
+    dy = y2-y1
+    return math.sqrt(dx*dx+dy*dy)
+
 def loop():
     global trailsX
     saveQueue = []
@@ -193,7 +198,8 @@ def loop():
         pygame.draw.rect(trailsBitmap, ROADCOLOUR, (0,int(player.y+240-8)%480, 640,8))
         pygame.draw.rect(trailsBitmap, ROADCOLOUR, (0,int(player.y-240)%480, 640,8))
         if(player.x - (trailsX*256) > 256): trailsX+=1
-        oldPos.append((player.x,player.y))
+        if(len(oldPos)<=0 or dist(oldPos[-1], (player.x, player.y)) > 5):
+               oldPos.append((player.x,player.y))
         player.x += dx
         player.y += dy
         gridx = int((player.x+320) / BS)
