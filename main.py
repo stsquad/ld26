@@ -21,7 +21,7 @@ class Follower:
         self.y = player.y-128*math.sin(player.rot)
 
 def init():
-    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower, idleSound, vanSound, vanStartSound, hornSound, sound, hard, maxspeed, turnrate
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly, follower, idleSound, vanSound, vanStartSound, hornSound, sound, hard, maxspeed, turnrate, crashSound
     
     pygame.mixer.pre_init(frequency=8000,size=-16,channels=2)
     pygame.init()
@@ -67,6 +67,7 @@ def init():
     vanSound = pygame.mixer.Sound("data/vannoise.wav")
     vanStartSound = pygame.mixer.Sound("data/vannoise-startup.wav")
     hornSound = pygame.mixer.Sound("data/horn8000.wav")
+    crashSound = pygame.mixer.Sound("data/crash.wav")
     sound = True
     hard = False
     maxspeed = MAXSPEED
@@ -158,6 +159,8 @@ def loop():
                 if(getMaze(x,y) == 1):
                     pygame.draw.rect(screen, (255,255,255), (x*BS-player.x,y*BS-player.y,BS,BS))
                     if polyIntersectsBlock(shipTransPoly, x*BS-player.x,y*BS-player.y):
+                        if(not dead and sound):
+                            crashSound.play()
                         dead = True
                         expletive = random.choice(["DAMN", "OOPS"])
                         drawText(screen, 320+64, 240-64, expletive)
