@@ -39,7 +39,9 @@ def init():
     windscreenPoly = polyScale(windscreenPoly, 8)
     windscreenPoly = polyRotate(windscreenPoly, -math.pi/2)
 
-    lightPoly = [ (1.7,2), (1.7+1,8), (1.7-1,8) ]
+    beamWidth = 2
+    beamLength = 10
+    lightPoly = [ (1.7,2), (1.7+beamWidth,2+beamLength), (1.7-beamWidth,2+beamLength), (1.7,2), (-1.7,2), (-1.7+beamWidth,2+beamLength), (-1.7-beamWidth,2+beamLength), (-1.7,2) ]
     lightPoly = polyScale(lightPoly, 8)
     lightPoly = polyRotate(lightPoly, -math.pi/2)
 
