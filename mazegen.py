@@ -1,19 +1,14 @@
 import random
 
 def initMaze():
-    global maxdist
-    maxdist = 0
+    pass
 
-def makeMaze(grid, sx, sy, distance):
-    global maxdist
+def makeMaze(grid, sx, sy):
     width = len(grid)
     height = len(grid[0])
 
     dx = [ 1, 0, -1 , 0 ]
     dy = [ 0, -1, 0, 1 ]
-    if(distance > maxdist):
-        maxdist = distance
-        print "Longest path so far = %d"%maxdist
     d = random.choice([0,1,2,3])
     routes = []
     for t in range(0,4):
@@ -24,7 +19,7 @@ def makeMaze(grid, sx, sy, distance):
                 td = (d+t)%4
                 grid[sx+dx[td]][sy+dy[td]] = 0
                 grid[tx][ty] = 0
-                routes.append(makeMaze(grid,tx,ty,distance+2))
+                routes.append(makeMaze(grid,tx,ty))
     maxroute = 0
     route = []
     for r in routes:

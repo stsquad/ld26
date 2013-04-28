@@ -26,7 +26,7 @@ def init():
     
     pygame.mixer.pre_init(frequency=8000,size=-16,channels=2)
     pygame.init()
-    screen = pygame.display.set_mode((640,480),pygame.FULLSCREEN)
+    screen = pygame.display.set_mode((640,480))#pygame.FULLSCREEN)
     pygame.display.set_caption('Stop following me')
     clock = pygame.time.Clock()
     numSprite = pygame.image.load("data/numbers.gif")
@@ -98,8 +98,6 @@ def createMaze(maze):
     initMaze()
     route = makeMaze(maze, 1,1,0)
 
-    print "Route through maze: "
-    print route
     global routeLen
     routeLen = len(route)
     print "Route length %d"%routeLen
