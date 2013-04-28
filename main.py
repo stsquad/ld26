@@ -96,7 +96,7 @@ def createMaze(maze):
         for y in range(0,GS):
             maze[x][y] = 1
     initMaze()
-    route = makeMaze(maze, 1,1,0)
+    route = makeMaze(maze, 1,1)
 
     global routeLen
     routeLen = len(route)
