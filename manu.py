@@ -62,10 +62,10 @@ def init():
     trailsY = 0
     miniMap = pygame.Surface((64,64))
     drawMiniMap(miniMap, maze)
-    idleSound = pygame.mixer.Sound("vanidle-8000.wav")
-    vanSound = pygame.mixer.Sound("vannoise.wav")
-    vanStartSound = pygame.mixer.Sound("vannoise-startup.wav")
-    hornSound = pygame.mixer.Sound("horn8000.wav")
+    idleSound = pygame.mixer.Sound("data/vanidle-8000.wav")
+    vanSound = pygame.mixer.Sound("data/vannoise.wav")
+    vanStartSound = pygame.mixer.Sound("data/vannoise-startup.wav")
+    hornSound = pygame.mixer.Sound("data/horn8000.wav")
 def drawMiniMap(surface, maze):
     surface.fill((0,0,0))
     for x in range(0,GS):
