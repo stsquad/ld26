@@ -162,10 +162,6 @@ def loop():
         wTransPoly = polyTranslate(wRotPoly, 320,240)
         pygame.draw.polygon(screen, (0,0,0), wTransPoly)
 
-        lRotPoly = polyRotate(lightPoly, player.rot)
-        lTransPoly = polyTranslate(lRotPoly, 320,240)
-        pygame.draw.polygon(screen, (255,255,0), lTransPoly)
-
         if(len(oldPos)>10):
             (fx,fy) = oldPos.pop(0)
             d = oldDir.pop(0)
@@ -180,6 +176,11 @@ def loop():
         shipRotPoly = polyRotate(windscreenPoly,chaseVanD)
         shipTransPoly = polyTranslate(shipRotPoly,320+chaseVanX-player.x,240+chaseVanY-player.y)
         pygame.draw.polygon(screen, (0,0,0), shipTransPoly)
+
+        if(frameCount % 100 < 4):
+            lRotPoly = polyRotate(lightPoly, chaseVanD)
+            lTransPoly = polyTranslate(lRotPoly, 320+chaseVanX-player.x,240+chaseVanY-player.y)
+            pygame.draw.polygon(screen, (255,255,0), lTransPoly)
 
         pygame.display.flip()
         if(dead):           
