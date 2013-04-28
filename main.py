@@ -5,6 +5,7 @@ import math
 import array
 from globs import *
 from polylib import *
+from collections import deque
 from mazegen import makeMaze, initMaze
 import pygame.sndarray
 
@@ -25,7 +26,7 @@ def init():
     
     pygame.mixer.pre_init(frequency=8000,size=-16,channels=2)
     pygame.init()
-    screen = pygame.display.set_mode((640,480))
+    screen = pygame.display.set_mode((640,480),pygame.FULLSCREEN)
     pygame.display.set_caption('Stop following me')
     clock = pygame.time.Clock()
     numSprite = pygame.image.load("data/numbers.gif")
@@ -126,8 +127,8 @@ def loop():
     frameCount = 0
     progress = 0
     repairBill = 0
-    oldPos = []
-    oldDir = []
+    oldPos = deque()
+    oldDir = deque()
     chaseVanX = 0
     chaseVanY = 0
     chaseVanD = 0
@@ -185,8 +186,8 @@ def loop():
         pygame.draw.polygon(screen, (0,0,0), wTransPoly)
 
         if(len(oldPos)>10):
-            (fx,fy) = oldPos.pop(0)
-            d = oldDir.pop(0)
+            (fx,fy) = oldPos.popleft()
+            d = oldDir.popleft()
             chaseVanX = fx
             chaseVanY = fy
             chaseVanD = d
@@ -209,6 +210,12 @@ def loop():
                 flashTimeout = random.randint(0,400)
 
         hornTimeout -= 1
+        if(hornTimeout<=10):
+            x = 320+chaseVanX-player.x+32
+            y = 240+chaseVanY-player.y-32
+            pygame.draw.rect(screen, (0,0,0), (x,y,5,15))
+            pygame.draw.rect(screen, (0,0,0), (x,y+20,5,5))
+
         if(hornTimeout<=0 and sound):
             hornSound.play()
             hornTimeout = random.randint(0,200)
