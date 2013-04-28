@@ -14,10 +14,10 @@ class Player:
         self.speed = 0
 
 def init():
-    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite
+    global screen, clock, maze, shipPoly, player, speed, trailsBitmap, trailsX, trailsY, miniMap, numSprite, windscreenPoly, letterSprite, lightPoly
     pygame.init()
     screen = pygame.display.set_mode((640,480))
-    pygame.display.set_caption('Turning circle')
+    pygame.display.set_caption('Birmingham Van Adventure 1000')
     clock = pygame.time.Clock()
     numSprite = pygame.image.load("numbers.gif")
     numSprite = pygame.transform.scale(numSprite, (numSprite.get_width()*3,numSprite.get_height()*3))
@@ -38,6 +38,10 @@ def init():
     windscreenPoly = [ (1.5,1.5), (1.5,1.0), (-1.5, 1.0), (-1.5,1.5) ]
     windscreenPoly = polyScale(windscreenPoly, 8)
     windscreenPoly = polyRotate(windscreenPoly, -math.pi/2)
+
+    lightPoly = [ (1.7,2), (1.7+1,8), (1.7-1,8) ]
+    lightPoly = polyScale(lightPoly, 8)
+    lightPoly = polyRotate(lightPoly, -math.pi/2)
 
     player = Player()
     trailsBitmap = pygame.Surface((640,480))
@@ -140,6 +144,10 @@ def loop():
         wTransPoly = polyTranslate(wRotPoly, 320,240)
         pygame.draw.polygon(screen, (0,0,0), wTransPoly)
 
+        lRotPoly = polyRotate(lightPoly, player.rot)
+        lTransPoly = polyTranslate(lRotPoly, 320,240)
+        pygame.draw.polygon(screen, (255,255,0), lTransPoly)
+
         pygame.display.flip()
         if(dead):           
             playerReset()
@@ -183,8 +191,6 @@ def loop():
             if((gridx,gridy) not in saveQueue):
                 saveQueue.append((gridx,gridy))
                 saveDir.append(player.rot)
-                print "Savequeue is now: "
-                print saveQueue
         if(maze[gridx][gridy]==5 or keys[K_w]):
             print "Game complete!"
             print "You finished the game in %f seconds"%(frameCount / 50.0)
@@ -220,7 +226,6 @@ def drawChar(surface, x, y, c):
    
 
 def drawText(surface, x, y, string):
-    print "Drawing text %s at %d,%d"%(string,x,y)
     if(len(string)==0):
         return
     c = string[0]
