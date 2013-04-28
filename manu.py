@@ -27,10 +27,10 @@ def init():
     screen = pygame.display.set_mode((640,480))
     pygame.display.set_caption('Stop following me')
     clock = pygame.time.Clock()
-    numSprite = pygame.image.load("numbers.gif")
+    numSprite = pygame.image.load("data/numbers.gif")
     numSprite = pygame.transform.scale(numSprite, (numSprite.get_width()*3,numSprite.get_height()*3))
     numSprite.set_colorkey((255,255,255))
-    letterSprite = pygame.image.load("letters.gif")
+    letterSprite = pygame.image.load("data/letters.gif")
     letterSprite = pygame.transform.scale(letterSprite, (letterSprite.get_width()*3,letterSprite.get_height()*3))
     letterSprite.set_colorkey((255,255,255))
     maze = [0]*GS
@@ -270,7 +270,7 @@ def loop():
                     exit(0)
 
 def titleScreen():
-    titlescreen = pygame.image.load("titlescreen.gif")
+    titlescreen = pygame.image.load("data/titlescreen.gif")
     while 1:
         screen.blit(titlescreen, (0,0))
         pygame.display.flip()
@@ -315,7 +315,7 @@ def drawNumber(surface, x, y, num):
         
 
 def winScreen(frames,repair):
-    titlescreen = pygame.image.load("winscreen.gif")
+    titlescreen = pygame.image.load("data/winscreen.gif")
     titlescreen = pygame.transform.scale(titlescreen, (640,480))
     while 1:
         screen.blit(titlescreen, (0,0,640,480))
@@ -337,7 +337,7 @@ def winScreen(frames,repair):
                     return
 
 def infoScreen():
-    infoscreen = pygame.image.load("infoscreen.gif")
+    infoscreen = pygame.image.load("data/infoscreen.gif")
     infoscreen = pygame.transform.scale(infoscreen, (640,480))
     while 1:
         screen.blit(infoscreen, (0,0,640,480))
