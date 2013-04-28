@@ -112,6 +112,10 @@ def loop():
     progress = 0
     repairBill = 0
     oldPos = []
+    oldDir = []
+    chaseVanX = 0
+    chaseVanY = 0
+    chaseVanD = 0
     while 1:
         clock.tick(50)
         screen.fill((127,127,127))
@@ -163,9 +167,17 @@ def loop():
         pygame.draw.polygon(screen, (255,255,0), lTransPoly)
 
         pygame.draw.circle(screen, (255,0,0), (int(follower.x), int(follower.y)), 4)
-        if(len(oldPos)>5):
+        if(len(oldPos)>10):
             (fx,fy) = oldPos.pop(0)
-            pygame.draw.circle(screen, (255,0,0), (int(320+fx-player.x), int(240+fy-player.y)), 4)
+            d = oldDir.pop(0)
+            chaseVanX = fx
+            chaseVanY = fy
+            chaseVanD = d
+            
+        shipRotPoly = polyRotate(shipPoly,chaseVanD)
+        shipTransPoly = polyTranslate(shipRotPoly,320+chaseVanX-player.x,240+chaseVanY-player.y)
+        pygame.draw.polygon(screen, (255,0,0), shipTransPoly)
+
 
         pygame.display.flip()
         if(dead):           
@@ -200,6 +212,7 @@ def loop():
         if(player.x - (trailsX*256) > 256): trailsX+=1
         if(len(oldPos)<=0 or dist(oldPos[-1], (player.x, player.y)) > 5):
                oldPos.append((player.x,player.y))
+               oldDir.append((player.rot))
         player.x += dx
         player.y += dy
         gridx = int((player.x+320) / BS)
