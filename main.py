@@ -265,7 +265,7 @@ def loop():
             if((gridx,gridy) not in saveQueue):
                 saveQueue.append((gridx,gridy))
                 saveDir.append(player.rot)
-        if(maze[gridx][gridy]==5 or keys[K_w]):
+        if(maze[gridx][gridy]==5):
             print "Game complete!"
             print "You finished the game in %f seconds"%(frameCount / 50.0)
             print "Van repair bill: %d quid"%(repairBill*50)
@@ -330,8 +330,8 @@ def titleScreen():
                     sys.exit(0)
                 elif event.key == K_SPACE:
                     return 0
-                elif event.key == K_i:
-                    return 1
+#                elif event.key == K_i:
+#                    return 1
                 elif event.key == K_s:
                     toggleSound()
                 elif event.key == K_h:
